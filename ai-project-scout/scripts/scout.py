@@ -5,9 +5,13 @@
     python scout.py                        # 默认：PH 30 条, IH 20 条
     python scout.py -p 20 -i 30            # PH 20 条, IH 30 条
     python scout.py --ph-min-followers 30  # IH 最低关注者 30 人
+
+环境变量（可选）:
+    IH_ALGOLIA_APP_ID   — Indie Hackers Algolia App ID（默认值已内建）
+    IH_ALGOLIA_API_KEY   — Indie Hackers Algolia 搜索 key（默认值已内建）
 """
 
-import argparse, json, re, time
+import argparse, json, os, re, time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -30,8 +34,13 @@ AI_PATTERNS = [
     r"\bneural\b", r"\bhugging.face\b", r"\bstable.diffusion\b",
 ]
 
-IH_APP_ID = "N86T1R3OWZ"
-IH_API_KEY = "5140dac5e87f47346abbda1a34ee70c3"
+# Indie Hackers Algolia 搜索 API 凭据
+# 这些是 IH 前端公开的 search-only key（只读搜索），已硬编码默认值。
+# 可通过环境变量覆盖（见仓库根目录 .env.example）：
+#   IH_ALGOLIA_APP_ID — Algolia Application ID
+#   IH_ALGOLIA_API_KEY — Algolia Search-only API Key
+IH_APP_ID = os.getenv("IH_ALGOLIA_APP_ID", "N86T1R3OWZ")
+IH_API_KEY = os.getenv("IH_ALGOLIA_API_KEY", "5140dac5e87f47346abbda1a34ee70c3")
 
 
 def is_ai_related(text: str) -> bool:
