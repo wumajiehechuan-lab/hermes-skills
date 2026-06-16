@@ -1,0 +1,18 @@
+# Runtime output (generated at execution time, not tracked)
+*/output/
+**/output/
+raw_latest.json
+seen_ids.json
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

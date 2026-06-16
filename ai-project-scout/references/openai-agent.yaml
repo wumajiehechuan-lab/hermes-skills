@@ -1,0 +1,7 @@
+interface:
+  display_name: "AI 项目侦察员"
+  short_description: "从 Product Hunt 和 Indie Hackers 抓取 AI 创业项目，翻译为中文日报"
+  default_prompt: "使用 $ai-project-scout 生成今天的 AI 创业项目日报"
+
+policy:
+  allow_implicit_invocation: true
