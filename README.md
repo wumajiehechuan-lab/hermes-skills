@@ -9,13 +9,14 @@
 
 ## 概览
 
-本项目是 [Hermes Agent](https://hermes-agent.nousresearch.com/docs) 的 Skills 合集，包含三个递进式的商业分析工具：
+本项目是 [Hermes Agent](https://hermes-agent.nousresearch.com/docs) 的 Skills 合集，包含四个递进式的商业分析 + 开发工具：
 
-| Skill | 功能 | 适用阶段 |
-|-------|------|---------|
-| **[concept-to-canvas](#-concept-to-canvas)** | 从模糊概念到 Lean Canvas + VPC 商业方案骨架 | 想法萌芽期 → 方案设计 |
-| **[biz-canvas](#-biz-canvas)** | 五维分析法拆解已有项目，评估可复制性与天花板 | 竞品分析期 → 可行性判断 |
-| **[ai-project-scout](#-ai-project-scout)** | 自动抓取 Product Hunt / Indie Hackers AI 项目，生成中文日报 | 市场侦察期 → 灵感获取 |
+|| Skill | 功能 | 适用阶段 |
+||-------|------|---------|
+|| **[concept-to-canvas](#-concept-to-canvas)** | 从模糊概念到 Lean Canvas + VPC 商业方案骨架 | 想法萌芽期 → 方案设计 |
+|| **[biz-canvas](#-biz-canvas)** | 五维分析法拆解已有项目，评估可复制性与天花板 | 竞品分析期 → 可行性判断 |
+|| **[ai-project-scout](#-ai-project-scout)** | 自动抓取 Product Hunt / Indie Hackers AI 项目，生成中文日报 | 市场侦察期 → 灵感获取 |
+|| **[complex-skill-builder](#-complex-skill-builder)** | 控制塔+仓库架构，系统化构建复杂 Skill（模板/多环境/长流程） | Skill 开发期 → 架构设计 |
 
 **使用路径：** 有了点子 → `concept-to-canvas` 打磨方案 → 找到竞品 → `biz-canvas` 拆解验证 → 日常喂信息 → `ai-project-scout` 持续侦察。
 
@@ -111,6 +112,44 @@ Step 3：输出 MD + PDF 方案文档
 
 ---
 
+## 🏗 complex-skill-builder
+
+**复杂 Skill 构建器 — 用控制塔+仓库架构系统化构建大规模 Skill。**
+
+基于 [garden-skills](https://github.com/ConardLi/garden-skills) 的工程实践。当一个 skill 需要管理 50+ 模板、10+ 脚本、覆盖多种运行环境时，把全部内容塞进 SKILL.md 会撑爆 Agent 上下文。解法：**控制塔（SKILL.md ≤15k）+ 仓库（references/ 按需加载）**。
+
+### 六阶段工作流
+
+```
+Phase 0: 复杂度评估（3 个问题判 simple/complex）
+   ↓
+Phase 1: 搭骨架（目录结构 + 用户确认）← 硬检查点
+   ↓
+Phase 2: 写控制塔（SKILL.md 9 章节按序写）
+   ↓
+Phase 3: 拆仓库（references/ 分类建模板）
+   ↓
+Phase 4: 加脚本（环境探测、API 封装等确定性逻辑）
+   ↓
+Phase 5: 验证（9 项 Hermes 格式合规检查）
+   ↓
+Phase 6: 交付（文件清单 + 测试指引）
+```
+
+### 核心文件
+
+| 路径 | 说明 |
+|------|------|
+| `SKILL.md` | 控制塔 — 复杂度评估 + 6 阶段工作流 + 决策表 |
+| `references/methodology.md` | 完整方法论文档（10 个设计维度） |
+| `references/hermes-format-cheatsheet.md` | Hermes Skill 格式规范速查 |
+
+### 触发词
+
+「帮我建一个复杂 skill」「这个 skill 太大了怎么拆」「设计一个多模板的 skill」「skill 架构设计」
+
+---
+
 ## 🚀 安装为 Hermes Agent Skill
 
 本项目中的每个 skill 都是 Hermes Agent 的原生 Skill（遵循 SKILL.md 规范）。
@@ -159,6 +198,13 @@ cd hermes-skills
                     │ business-concept-    │
                     │ workout (多轮打磨)    │
                     └─────────────────────┘
+
+        ┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐
+        │   complex-skill-builder         │
+        │   (构建复杂 Skill 的基础设施)     │
+        │                                 │
+        │   所有 skill 的开发都由此驱动     │
+        └ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘
 ```
 
 ---

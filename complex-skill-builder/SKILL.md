@@ -1,0 +1,165 @@
+---
+name: complex-skill-builder
+description: Use when the user asks to build, extend, or refactor a complex Skill with many templates, scripts, or environment variants. Applies control-tower + warehouse architecture with progressive disclosure, mode detection, and hard checkpoints. Not for simple one-shot skills.
+version: 1.0.0
+author: Hermes Agent
+license: MIT
+metadata:
+  hermes:
+    tags: [skills, authoring, architecture, complex-skills]
+    related_skills: [hermes-agent-skill-authoring]
+---
+
+# Complex Skill Builder
+
+## Overview
+
+Build complex Skills that stay maintainable when they grow past 50+ templates, 10+ scripts, or multiple runtime environments. Applies the "control-tower + warehouse" architecture distilled from [garden-skills](https://github.com/ConardLi/garden-skills).
+
+The core insight: **SKILL.md is a control tower, not a warehouse.** Keep it under 15k chars — only structure, indexes, decision logic, and workflows. Everything else goes into `references/`, loaded on-demand by the Agent.
+
+## When to Use
+
+- User asks to create a skill with many variants/templates/categories
+- Skill needs to work across different environments (local, cloud, different agents)
+- Skill has long multi-phase workflows with decision points
+- Existing skill is ballooning past 15k chars and needs structural refactoring
+
+Don't use for:
+- Simple one-shot skills (≤3 steps, no variants)
+- Skills that are just a short list of commands
+- Quick fixes to existing skills (use `skill_manage(action='patch')` instead)
+
+## Skill Structure
+
+```
+complex-skill-builder/
+├── SKILL.md                              ← 本文件（控制塔）
+├── references/
+│   ├── methodology.md                    ← 完整设计方法论（10 个维度）
+│   └── hermes-format-cheatsheet.md       ← Hermes 格式规范速查
+```
+
+加载本 skill 后，先读 `references/methodology.md` 了解完整设计原理，再用 `references/hermes-format-cheatsheet.md` 确保格式合规。
+
+## Workflow
+
+### Phase 0: 复杂度评估（先问再动手）
+
+问用户 3 个问题（用 `clarify()` 一次问完）：
+
+1. 这个 skill 有几个变体/模板/子分类？
+2. 是否需要在不同环境下工作？各环境行为差异大吗？
+3. 是否有长流程（5+ 步）需要用户中途确认？
+
+决策表：
+
+| 条件 | 判定 | 策略 |
+|---|---|---|
+| 模板<5, 单一环境, 短流程 | **Simple** | 直接写 SKILL.md，不拆 references |
+| 任一条件触发 | **Complex** | 走 Phase 1-6 完整流程 |
+
+### Phase 1: 搭骨架（必须用户确认）
+
+1. 调用 `skill_manage(action='create')` 创建 skill（此时 SKILL.md 只放占位符）
+2. 用 `skill_manage(action='write_file')` 创建目录结构:
+   ```
+   skill-name/
+   ├── SKILL.md
+   ├── references/
+   │   ├── category-a/
+   │   └── category-b/
+   ├── scripts/        # 如有探测/生成脚本
+   └── templates/      # 如有脚手架
+   ```
+3. **停。** 展示骨架给用户确认后再继续。
+
+### Phase 2: 写控制塔（SKILL.md）
+
+按此顺序写，参考 `references/methodology.md` 各章节：
+
+1. Overview — 一句话说清 skill 做什么
+2. When to Use — 触发器 + 排除条件
+3. 运行模式（如有环境差异）— 探测方法 + 模式决策表
+4. Skill 结构 — scripts/ references/ 各有什么用
+5. 模板索引 — 分类目录 + 文件名 + 一句话描述（**不列内容！**）
+6. 工作流 — 分步流程，标注 [硬检查点]
+7. 规则与约束 — 输出路径、命名规则、询问规则
+8. Common Pitfalls — 禁止行为 + 错误回退
+9. Verification Checklist — 任务完成后的自检项
+
+硬约束：
+- 总体 ≤ 15,000 字符
+- 决策条件用表格，不写散文
+- Description "Use when ..." 开头，≤ 1024 字符
+
+### Phase 3: 拆仓库（references/）
+
+每个分类：
+1. 创建 `references/<category>/` 子目录
+2. 写入 `.md` 模板文件（每个 2,000-5,000 字符）
+3. 如需要，提供分类级 `README.md` 作为导航
+4. 用 `skill_manage(action='write_file', file_path='references/...')` 写入
+
+### Phase 4: 加脚本（如有）
+
+只加需要确定性执行的逻辑（环境探测、API 封装、文件转换）。
+用 `skill_manage(action='write_file', file_path='scripts/...')` 写入。
+
+### Phase 5: 验证
+
+逐项检查 Hermes 格式合规性（参考 `references/hermes-format-cheatsheet.md`）：
+
+- [ ] Frontmatter 完整，以 `---` 开头（第 0 字节）
+- [ ] Description "Use when ..." 开头，≤ 1024 字符
+- [ ] SKILL.md ≤ 15,000 字符（硬限 100,000）
+- [ ] 有 `## Common Pitfalls` 章节（≥3 条）
+- [ ] 有 `## Verification Checklist` 章节（≥5 项）
+- [ ] 模板索引只列文件名+描述，不列内容
+- [ ] 决策条件用表格而非散文
+- [ ] 长流程标注了硬检查点
+- [ ] 输出路径和命名规则明确（如有产出）
+
+### Phase 6: 交付
+
+告知用户：
+- 创建了哪些文件及各文件大小
+- SKILL.md 总大小
+- 如何在新 session 中测试
+
+## Rules
+
+1. **永远不要跳过 Phase 0**。3 个问题 30 秒能避免选错策略。
+2. **Phase 1 骨架必须用户确认**后再写入内容。一鼓作气写完 10 个文件然后全跑偏 = 浪费时间。
+3. **SKILL.md 用 `skill_manage(action='edit')` 编辑，references/ 用 `skill_manage(action='write_file')` 写入**。
+4. **不重复造轮子**——`hermes-agent-skill-authoring` 已经覆盖的格式细节直接引用，不要在本 skill 里再写一遍。
+
+## Common Pitfalls
+
+1. **把模板内容写进索引**。索引只列文件名+一句话描述，具体内容在 references/ 里。Agent 需要时按路径加载。
+
+2. **references/ 单个文件过大**。超过 5,000 字符的 reference 考虑再拆。Agent 按文件加载，加载 20k 的 reference = 没拆分。
+
+3. **没有硬检查点**。用户说「做个海报生成 skill」，Agent 写了 10 个模板全跑偏。Phase 1 骨架必须等用户点头。
+
+4. **忽略 Hermes 格式规范**。garden-skills 的 frontmatter 只放 name+description，Hermes 还要求 version/author/license/metadata。参考 `references/hermes-format-cheatsheet.md`。
+
+5. **所有模板用同一种格式**。结构化任务（UI/图表）用 JSON 模板，创意任务用自然语言。强制统一会限制输出质量。
+
+6. **跳过环境探测设计**。如果 skill 可能在不同环境下运行（Hermes 桌面 vs cron job vs 不同 Agent），必须有模式检测和分叉逻辑。
+
+## Verification Checklist
+
+After building the skill, confirm:
+
+- [ ] Phase 0 复杂度评估已完成（3 个问题已答）
+- [ ] Phase 1 骨架已创建且用户已确认
+- [ ] SKILL.md ≤ 15,000 字符
+- [ ] Frontmatter 完整（name/description/version/author/license/metadata）
+- [ ] Description "Use when ..." 开头，≤ 1024 字符
+- [ ] 所有模板内容在 references/ 下，SKILL.md 只放索引
+- [ ] 决策条件用表格
+- [ ] 长流程标注了硬检查点
+- [ ] 有 `## Common Pitfalls`（≥3 条）
+- [ ] 有 `## Verification Checklist`（≥5 项）
+- [ ] 输出路径和命名规则明确（如有产出文件）
