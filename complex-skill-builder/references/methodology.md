@@ -1,5 +1,8 @@
 # 复杂 Skill 设计方案论
 
+> **这是给人类阅读的完整参考文档（12KB）。Agent 执行时不要加载此文件。**
+> Agent 请使用按 Phase 拆分的小文件：`control-tower-design.md`（Phase 2）、`warehouse-design.md`（Phase 3）、`hermes-format-cheatsheet.md`（Phase 5）。
+
 > 基于 [garden-skills](https://github.com/ConardLi/garden-skills) 的工程实践提炼，适配 Hermes Agent 的 skill 格式规范。
 
 ---
