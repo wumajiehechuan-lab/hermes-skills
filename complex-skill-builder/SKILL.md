@@ -38,8 +38,9 @@ Don't use for:
 complex-skill-builder/
 ├── SKILL.md                              ← 本文件（6k 控制塔）
 ├── references/
-│   ├── control-tower-design.md           ← Phase 2 用：SKILL.md 各节怎么写（2.5k）
-│   ├── warehouse-design.md               ← Phase 3 用：模板索引、格式选择、输出约定（2.4k）
+│   ├── control-tower-design.md           ← Phase 2 用：SKILL.md 各节写法（2.5k）
+│   ├── warehouse-design.md               ← Phase 3 用：模板结构、参数语法、拆分粒度（5k）
+│   ├── scripts-design.md                 ← Phase 4 用：脚本 vs SKILL.md 规则的判断标准（2k）
 │   ├── hermes-format-cheatsheet.md       ← Phase 5 用：Hermes 格式规范速查（2.1k）
 │   └── methodology.md                    ← 人类阅读完整参考（Agent 不加载）
 ```
@@ -111,6 +112,10 @@ SKILL.md 按此顺序写，每节控制在 500-1500 字符：
 用 `skill_manage(action='write_file', file_path='references/...')` 写入。
 
 ### Phase 4: 加脚本（如有）
+
+**加载 `references/scripts-design.md`** 获取判断标准。
+
+核心规则：**涉及精确计算（比例、数值比较、格式校验）→ 写成脚本。涉及语义判断（风格评估、模板选择、提问顺序）→ 留在 SKILL.md 规则里。**
 
 只加需要确定性执行的逻辑（环境探测、API 封装、文件转换）。
 用 `skill_manage(action='write_file', file_path='scripts/...')` 写入。

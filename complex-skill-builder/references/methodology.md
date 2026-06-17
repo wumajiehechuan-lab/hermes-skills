@@ -385,3 +385,85 @@ metadata:
 - [garden-skills/gpt-image-2](https://github.com/ConardLi/garden-skills/tree/main/skills/gpt-image-2) — 80+ 模板、18 分类、3 运行模式的图像生成 skill
 - [garden-skills/web-design-engineer](https://github.com/ConardLi/garden-skills/tree/main/skills/web-design-engineer) — 6 步设计工作流、25 种风格配方的 Web 设计 skill
 - [garden-skills/kb-retriever](https://github.com/ConardLi/garden-skills/tree/main/skills/kb-retriever) — 分层索引 + 先学再处理的本地知识库检索 skill
+
+---
+
+## 附 A：模板文件内部结构规范
+
+> 详细的 Agent 执行版本见 `references/warehouse-design.md`。此处为设计原理说明。
+
+gpt-image-2 的每个模板文件（如 `live-commerce-ui.md`）包含以下元信息：
+
+| 章节 | 作用 |
+|---|---|
+| **适用于** | 正向匹配——Agent 判定"这个模板能用来做这个任务吗？" |
+| **不要用于** | 反向排除——"这个模板看起来很匹配但其实不适合，原因是什么" |
+| **使用规则** | 告诉 Agent 模板的"玩法"——哪些字段可以定制、可默认、可随机 |
+| **缺失信息优先提问顺序** | **最重要的一节**。避免 Agent 问出一堆和任务无关的问题。按重要性排序 |
+| **参数策略表** | 结构化标注每个参数的策略：必问 / 可默认 / 可随机——比自然语言描述更精确 |
+| **约束条件** | `must_keep`（硬要求）+ `avoid`（禁止项）——给模板加护栏 |
+| **变体指南** | 告诉 Agent 如何根据用户输入切换变体（用户给了照片 vs 只给了名字 vs 什么都没给） |
+
+### 缺失信息优先提问顺序的设计
+
+这是模板文件中最容易被忽略但**最影响用户体验**的一节。
+
+错误做法：Agent 加载模板后发现缺字段 → 一口气问 10 个问题。
+正确做法：按重要性排序，一次问 1-2 个最重要的问题。
+
+例如直播 UI 模板的排序：
+1. 主播来源（真人照片/名人名字/描述/随机）——决定画面核心
+2. 商品信息（卖什么）——决定产品卡片内容
+3. 平台风格（抖音/小红书/淘宝）——决定 UI 样式
+4. 语言（中/英）——影响所有文字
+
+如果用户不想逐项回答，提供「自动补全模式」入口——Agent 随机生成次要信息，只保留用户指定的核心部分。
+
+### 参数占位符语法
+
+```
+{argument name="参数名" default="默认值" required=true}
+```
+
+- `name` 必须——给 Agent 看的参数语义
+- `default` 可选——有默认值时 Agent 不提问
+- `required=true` 可选——标记必填，Agent 必须询问
+
+---
+
+## 附 B：拆分粒度原则
+
+| 文件大小 | 判断 |
+|---|---|
+| 2,000–5,000 字符 | ✅ **甜点区** |
+| < 1,000 字符 | ⚠️ 可能太碎——考虑合并 |
+| 5,000–10,000 字符 | ⚠️ 偏大——考虑拆 |
+| > 10,000 字符 | ❌ 必须拆 |
+
+**合并优于拆分的场景：**
+- 两个模板总是一起被使用 → 同一个文件，用 `## 模板 1 / ## 模板 2` 区分
+- 三个以上 <1KB 的小模板属于同一个子分类 → 合并
+
+**拆分过头的代价：** 模板太碎 → Agent 需要在多个文件间跳转 → 每次跳转是一次工具调用 → 延迟增加 + 出错概率增加。2-3 个 3KB 的文件比 6 个 1KB 的文件好。
+
+---
+
+## 附 C：脚本 vs SKILL.md 规则的分工
+
+> 详细的 Agent 执行版本见 `references/scripts-design.md`。此处为设计原理说明。
+
+核心判断规则：**涉及精确计算 → 写成脚本。涉及语义判断 → 留在 SKILL.md 规则里。**
+
+| 逻辑类型 | 放哪 | 原因 |
+|---|---|---|
+| 数值计算（比例、统计、阈值校验） | `scripts/` | Agent 算数不可靠 |
+| 格式校验（JSON schema、文件完整性） | `scripts/` | 确定性规则，脚本比 Agent 手检快且准 |
+| API 调用封装 | `scripts/` | 避免 Agent 手动构造 curl |
+| 环境探测 | `scripts/` | Agent 不该猜自己有没有 API key |
+| 风格是否匹配 | SKILL.md | 语义判断，脚本做不到 |
+| 模板选择 | SKILL.md | 匹配用户意图，脚本做不到 |
+| 工作流编排 | SKILL.md | 依赖上下文判断 |
+
+**一个具体例子**（来自 tvc-director）：
+- 产品出镜率校验（统计分镜中产品出现的比例）→ `scripts/validate_coverage.py`
+- 判断分镜画面是否"有电影感"→ 留在 SKILL.md 的反模式防护里
