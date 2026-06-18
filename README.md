@@ -117,7 +117,7 @@ Step 3：输出 MD + PDF 方案文档
 
 **TVC 广告创意导演 — 把产品 Brief 变成 Nano Banana Pro 关键帧提示词和 Seedance Multi-Phase 视频提示词。**
 
-基于 `complex-skill-builder` 的控制塔+仓库架构重构（v2.0），19 个 reference 文件按需加载，最简模式仅 15K 上下文。
+> 原作者：[Ethanxwang/tvc-director](https://github.com/Ethanxwang/tvc-director) — 本版本基于 `complex-skill-builder` 进行控制塔+仓库架构重构（v2.0），19 个 reference 文件按需加载，最简模式仅 15K 上下文。
 
 ### 三大核心能力
 
