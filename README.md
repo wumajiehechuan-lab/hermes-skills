@@ -9,16 +9,17 @@
 
 ## 概览
 
-本项目是 [Hermes Agent](https://hermes-agent.nousresearch.com/docs) 的 Skills 合集，包含四个递进式的商业分析 + 开发工具：
+本项目是 [Hermes Agent](https://hermes-agent.nousresearch.com/docs) 的 Skills 合集，包含五个递进式的商业分析 + 创意 + 开发工具：
 
-|| Skill | 功能 | 适用阶段 |
-||-------|------|---------|
-|| **[concept-to-canvas](#-concept-to-canvas)** | 从模糊概念到 Lean Canvas + VPC 商业方案骨架 | 想法萌芽期 → 方案设计 |
-|| **[biz-canvas](#-biz-canvas)** | 五维分析法拆解已有项目，评估可复制性与天花板 | 竞品分析期 → 可行性判断 |
-|| **[ai-project-scout](#-ai-project-scout)** | 自动抓取 Product Hunt / Indie Hackers AI 项目，生成中文日报 | 市场侦察期 → 灵感获取 |
-|| **[complex-skill-builder](#-complex-skill-builder)** | 控制塔+仓库架构，系统化构建复杂 Skill（模板/多环境/长流程） | Skill 开发期 → 架构设计 |
+||| Skill | 功能 | 适用阶段 |
+|||-------|------|---------|
+||| **[concept-to-canvas](#-concept-to-canvas)** | 从模糊概念到 Lean Canvas + VPC 商业方案骨架 | 想法萌芽期 → 方案设计 |
+||| **[biz-canvas](#-biz-canvas)** | 五维分析法拆解已有项目，评估可复制性与天花板 | 竞品分析期 → 可行性判断 |
+||| **[ai-project-scout](#-ai-project-scout)** | 自动抓取 Product Hunt / Indie Hackers AI 项目，生成中文日报 | 市场侦察期 → 灵感获取 |
+||| **[tvc-director](#-tvc-director)** | TVC 广告创意导演 — 产品 Brief → Nano Banana Pro 关键帧 + Seedance 视频脚本 | 创意产出期 → 广告物料 |
+||| **[complex-skill-builder](#-complex-skill-builder)** | 控制塔+仓库架构，系统化构建复杂 Skill（模板/多环境/长流程） | Skill 开发期 → 架构设计 |
 
-**使用路径：** 有了点子 → `concept-to-canvas` 打磨方案 → 找到竞品 → `biz-canvas` 拆解验证 → 日常喂信息 → `ai-project-scout` 持续侦察。
+**使用路径：** 有了点子 → `concept-to-canvas` 打磨方案 → 找到竞品 → `biz-canvas` 拆解验证 → 日常喂信息 → `ai-project-scout` 持续侦察 → 做广告 → `tvc-director` 生成物料。
 
 ---
 
@@ -112,6 +113,47 @@ Step 3：输出 MD + PDF 方案文档
 
 ---
 
+## 🎬 tvc-director
+
+**TVC 广告创意导演 — 把产品 Brief 变成 Nano Banana Pro 关键帧提示词和 Seedance Multi-Phase 视频提示词。**
+
+基于 `complex-skill-builder` 的控制塔+仓库架构重构（v2.0），19 个 reference 文件按需加载，最简模式仅 15K 上下文。
+
+### 三大核心能力
+
+| 能力 | 说明 | 适用产品 |
+|------|------|---------|
+| **产品电影化拆解** | 产品是唯一主角，纯影棚多 Phase 微电影：零件悬浮拆解、材质微距 | 耳机/相机/手机/机械表芯 |
+| **品牌世界穿梭** | 品牌世界与产品世界轮流出场，Match Cut 衔接 | 运动相机/越野车/潜水表 |
+| **生活方式短片** | 产品始终在品牌世界中，通过运镜自然突出 | 跑鞋/手表/眼镜/手袋 |
+
+### 七阶段工作流
+
+```
+Phase 1：创意简报 → Phase 2：创意提案 [检查点]
+    → Phase 3：视觉定调（A-E 画风）→ Phase 4：前期筹备 [检查点]
+    → Phase 5：分镜与拍摄（多宫格 + 视频提示词 + End Frame）
+    → Phase 6：审片 → Phase 7：交付
+```
+
+### 核心文件
+
+| 路径 | 说明 |
+|------|------|
+| `SKILL.md` | 控制塔 — 4 种运行模式、7 Phase 工作流、19 个模板索引 |
+| `references/methodology.md` | 导航入口 — 按 Phase/模式的文件加载指南 |
+| `references/creative-strategy/` | Phase 1-2：创意简报、叙事模型、品牌世界设计 |
+| `references/visual-language/` | Phase 3-5：A-E 画风锚定词库、6层提示词结构、场景模板 |
+| `references/pre-production/` | Phase 4：资产规划逻辑、三类资产生成标准 |
+| `references/storyboard/` | Phase 5：多宫格系统、视频提示词、产品拆解、End Frame |
+| `references/delivery/` | Phase 6-7：输出格式模板、迭代策略、交付流程 |
+
+### 触发词
+
+「帮我做一条xx产品广告」「写一个产品 Hero Shot 提示词」「帮我做分镜」「这张产品图xx不对」
+
+---
+
 ## 🏗 complex-skill-builder
 
 **复杂 Skill 构建器 — 用控制塔+仓库架构系统化构建大规模 Skill。**
@@ -191,13 +233,13 @@ cd hermes-skills
 ┌─────────────────┐    ┌─────────────────────┐
 │ concept-to-canvas│───▶│     biz-canvas      │
 │ (从0到1生成方案)  │    │  (拆解验证已有项目)  │
-└─────────────────┘    └─────────────────────┘
-                              │
-                              ▼
-                    ┌─────────────────────┐
-                    │ business-concept-    │
-                    │ workout (多轮打磨)    │
-                    └─────────────────────┘
+└─────────────────┘    └──────────┬──────────┘
+                                  │
+                                  ▼
+                        ┌─────────────────────┐
+                        │ business-concept-    │
+                        │ workout (多轮打磨)    │
+                        └─────────────────────┘
 
         ┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐
         │   complex-skill-builder         │
@@ -205,6 +247,14 @@ cd hermes-skills
         │                                 │
         │   所有 skill 的开发都由此驱动     │
         └ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘
+
+┌─────────────────────┐
+│    tvc-director      │
+│ (TVC广告创意导演)     │
+│                      │
+│ 复杂 Skill 设计范例   │
+│ 控制塔+仓库架构落地   │
+└─────────────────────┘
 ```
 
 ---
